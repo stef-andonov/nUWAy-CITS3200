@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import glob
+import argparse
 
 def calibrate_camera(image_folder, chessboard_size, square_size_mm):
     # Prepare object points based on the chessboard size
@@ -57,5 +58,16 @@ def calibrate_camera(image_folder, chessboard_size, square_size_mm):
     print("Camera calibration complete.")
     print("Results saved to 'camera_calibration_results.txt'.")
 
+def main(args=None):
+    parser = argparse.ArgumentParser(description='Camera calibration script.')
+    parser.add_argument('image_folder', type=str, help='Path to the folder containing calibration images.')
+    parser.add_argument('chessboard_width', type=int, help='Width of the chessboard (number of inner corners per row).')
+    parser.add_argument('chessboard_height', type=int, help='Height of the chessboard (number of inner corners per column).')
+    parser.add_argument('square_size_mm', type=float, help='Size of the squares on the chessboard in millimeters.')
+    
+    args = parser.parse_args()
+
+    calibrate_camera(args.image_folder, (args.chessboard_width, args.chessboard_height), args.square_size_mm)
+
 if __name__ == '__main__':
-    calibrate_camera('pictures', (13, 12), 12)  # Adjust path and square size as needed
+    main()
