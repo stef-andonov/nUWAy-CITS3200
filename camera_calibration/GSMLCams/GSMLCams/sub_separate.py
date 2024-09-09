@@ -18,7 +18,7 @@ class CameraImageSubscriber(Node):
         self.image_counter = 0
 
     def listener_callback(self, msg):
-        cv_image = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
+        cv_image = self.bridge.imgmsg_to_cv2(msg)
         image_filename = f'calibration_image_{self.image_counter}.jpg'
         # Ensure the directory exists
         os.makedirs("pictures", exist_ok=True)
