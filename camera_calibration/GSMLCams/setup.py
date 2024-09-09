@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'GSMLCams'
+package_name = 'gsml'
 
 setup(
     name=package_name,
@@ -11,15 +11,18 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'rclpy', 'sensor_msgs', 'cv_bridge', 'opencv-python'],
     zip_safe=True,
-    maintainer='stefan',
-    maintainer_email='stefan@todo.todo',
+    maintainer='nvidia',
+    maintainer_email='nvidia@todo.todo',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'gsml_publisher = gsml.pub:main',
+            'gsml_subscriber = gsml.sub_separate:main',
+            'gsml_calibrate = gsml.sub_separate_calibrate:main',
         ],
     },
 )
