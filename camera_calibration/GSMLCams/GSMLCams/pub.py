@@ -1,4 +1,5 @@
 # Based on sample code from KieranQB ROS2 Repository
+# rclpy - Python API for interacting with ROS2
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
@@ -6,6 +7,7 @@ from cv_bridge import CvBridge
 import cv2
 import numpy as np
 
+# Extends node to act as a ROS2 publisher for video frames
 class ImagePublisher(Node):
 
     def __init__(self):
@@ -14,6 +16,7 @@ class ImagePublisher(Node):
         timer_period = 0.1
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
+        #video capture object to capture frames from the default camera (device 0)
         self.cap = cv2.VideoCapture(0)
         self.br = CvBridge()
 
@@ -27,7 +30,7 @@ class ImagePublisher(Node):
             with open(filename, 'r') as f:
                 lines = f.readlines()
 
-                # Extract camera matrix
+                # Extract the 3x3 camera matrix from file
                 self.camera_matrix = np.array([list(map(float, line.split())) for line in lines[1:4]], dtype=np.float32).reshape((3, 3))
                 
                 # Extract distortion coefficients
