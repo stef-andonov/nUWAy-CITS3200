@@ -13,7 +13,7 @@ class ImagePublisher(Node):
     def __init__(self):
         super().__init__('image_publisher')
         self.publisher = self.create_publisher(Image, 'video_frames', 10)
-        timer_period = 0.1
+        timer_period = 1 / 60    # 60 fps
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
         #video capture object to capture frames from the default camera (device 0)
