@@ -9,9 +9,6 @@ from rclpy.qos import ReliabilityPolicy, QoSProfile, DurabilityPolicy
 
 import math
 
-### TODO:
-### - Extend stop and slow zones to front depending on 
-
 class StopNode(Node):
     def __init__(self):
         super().__init__('stop_node')
@@ -80,7 +77,7 @@ class StopNode(Node):
         min_distance, direction = self.adjust_zones_based_on_movement(msg)
 
         # Publish the polygon marker to visualize min_distance
-        self.publish_polygon_marker(self.stop_threshold, self.slow_down_threshold, direction)
+        self.publish_polygon_marker(direction)
 
         control_signal = String()
 
@@ -102,12 +99,13 @@ class StopNode(Node):
         Divides the LaserScan data into front, left, right, and rear sectors.
         '''
         num_ranges = len(msg.ranges)
-        sector_size = num_ranges // 4  # Split into four equal sectors: front, left, right, rear
-
-        front_sector = msg.ranges[sector_size:2 * sector_size]
-        left_sector = msg.ranges[2 * sector_size:]  # Left from the middle to end
-        right_sector = msg.ranges[:sector_size]  # Right from the beginning
-        rear_sector = msg.ranges[3 * sector_size:]  # Rear data
+        sector_size = num_ranges // 8    # Must divide into 8 sectors due to rear comprising start and end of /scan array
+        
+        front_sector = msg.ranges[sector_size * 3 : sector_size * 5]
+        rear_sector = msg.ranges[sector_size * 7:] + msg.ranges[0 : sector_size]
+        left_sector =  msg.ranges[sector_size : sector_size * 3]
+        right_sector = msg.ranges[sector_size * 5 : sector_size * 7]
+        
 
         return front_sector, left_sector, right_sector, rear_sector
 
@@ -177,31 +175,31 @@ class StopNode(Node):
             self.get_logger().info('Publishing slow-down command to override other commands.')
 
 
-    def publish_polygon_marker(self, stop_distance, slow_down_distance, direction):
+    def publish_polygon_marker(self, direction):
         """
         Publishes polygon markers around the robot in RViz to denote the stop and slow-down distances,
         and adjusts the zones dynamically based on movement direction.
         """
         # Adjust the size of the zones based on the direction
-        front_stop = stop_distance if direction == 'front' else self.stop_threshold_min
-        rear_stop = stop_distance if direction == 'rear' else self.stop_threshold_min
+        front_stop = self.stop_threshold if direction == 'front' else self.stop_threshold_min
+        rear_stop = self.stop_threshold if direction == 'rear' else self.stop_threshold_min
     
         # Adjust left and right stop zones dynamically based on direction of movement
-        left_stop = stop_distance if direction == 'left' else self.stop_threshold_min
-        right_stop = stop_distance if direction == 'right' else self.stop_threshold_min
+        left_stop = self.stop_threshold if direction == 'left' else self.stop_threshold_min
+        right_stop = self.stop_threshold if direction == 'right' else self.stop_threshold_min
     
         # Adjust slow-down distances similarly
-        front_slow = slow_down_distance if direction == 'front' else self.slow_down_threshold_min
-        rear_slow = slow_down_distance if direction == 'rear' else self.slow_down_threshold_min
+        front_slow = self.slow_down_threshold if direction == 'front' else self.slow_down_threshold_min
+        rear_slow = self.slow_down_threshold if direction == 'rear' else self.slow_down_threshold_min
     
-        left_slow = slow_down_distance if direction == 'left' else self.slow_down_threshold_min
-        right_slow = slow_down_distance if direction == 'right' else self.slow_down_threshold_min
+        left_slow = self.slow_down_thresholdstance if direction == 'left' else self.slow_down_threshold_min
+        right_slow = self.slow_down_threshold if direction == 'right' else self.slow_down_threshold_min
     
         # Stop zone marker
         stop_marker = Marker()
         stop_marker.header.frame_id = "base_link"
         stop_marker.header.stamp = self.get_clock().now().to_msg()
-        stop_marker.ns = "stop_distance_polygon"
+        stop_marker.ns = "stop_threshold_polygon"
         stop_marker.id = 0
         stop_marker.type = Marker.LINE_STRIP
         stop_marker.action = Marker.ADD
