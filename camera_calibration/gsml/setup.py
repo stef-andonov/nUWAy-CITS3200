@@ -20,7 +20,10 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'gsml_publisher = gsml.pub:main',
+            'gsml_publisher_1 = gsml.pub1:main',
+            'gsml_publisher_2 = gsml.pub2:main',
+            'gsml_publisher_3 = gsml.pub3:main',
+            'gsml_publisher_4 = gsml.pub4:main',
             'gsml_subscriber = gsml.sub_separate:main',
             'gsml_calibrate = gsml.sub_separate_calibrate:main',
         ],
