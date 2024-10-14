@@ -34,7 +34,7 @@ y_max_pixel = int((y_max + 10) * scaling_factor)
 cv2.rectangle(bev_image, 
               (x_min_pixel, y_min_pixel), 
               (x_max_pixel, y_max_pixel), 
-              color=(0, 255, 0), thickness=2)
+              color=(0, 255, 255), thickness=2)
 
 # Display the result
 cv2.imshow("BEV Bounding Box", bev_image)
