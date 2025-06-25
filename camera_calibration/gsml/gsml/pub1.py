@@ -12,7 +12,7 @@ class ImagePublisher(Node):
 
     def __init__(self):
         super().__init__('image_publisher')
-        self.publisher = self.create_publisher(Image, 'video_frames_1', 10)
+        self.publisher = self.create_publisher(Image, '/camera_front', 10)
         timer_period = 1 / 60    # 60 fps
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
